@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>happy 1 year, my love.</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Nunito:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      overflow: hidden;
+      position: relative;
+      background-color: #120f0d;
+      background-image:
+        linear-gradient(rgba(18, 15, 13, 0.38), rgba(18, 15, 13, 0.58)),
+        url("background-cover-page.jpg");
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .overlay {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .content {
+      max-width: 760px;
+      padding: 20px;
+      animation: fadeUp 1.4s ease;
+    }
+
+    h1 {
+      font-family: 'Marcellus', serif;
+      font-weight: 400;
+      font-size: clamp(3rem, 7vw, 5.4rem);
+      line-height: 1.08;
+      letter-spacing: 0.01em;
+      color: #eadcc8;
+      margin-bottom: 18px;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.28);
+    }
+
+    p {
+      font-size: clamp(1rem, 2vw, 1.1rem);
+      line-height: 1.8;
+      font-weight: 500;
+      color: #f3e7d7;
+      max-width: 620px;
+      margin: 0 auto 30px;
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.22);
+    }
+
+    .enter-btn {
+      display: inline-block;
+      padding: 14px 32px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: 0.01em;
+      color: #3b2d20;
+      background: linear-gradient(135deg, #f0dfc7, #dbc1a0);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+    }
+
+    .enter-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+      opacity: 0.96;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .content {
+        max-width: 92%;
+        padding: 16px;
+      }
+
+      p {
+        line-height: 1.7;
+        margin-bottom: 24px;
+      }
+
+      .enter-btn {
+        padding: 13px 26px;
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="fireworks"></canvas>
+
+  <div class="overlay">
+    <div class="content">
+      <h1>happy 1 year, my love.</h1>
+      <p>
+        365 days of loving you, laughing with you, add on with some fights 😜 and making memories with you.
+        a little corner of the internet made just for us.
+      </p>
+      <a href="home.html" class="enter-btn">enter our world</a>
+    </div>
+  </div>
+
+  <script>
+  const canvas = document.getElementById("fireworks");
+  const ctx = canvas.getContext("2d");
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
+
+  const particles = [];
+  const fireworkColors = [
+    "#f7d6bf", // warm peach
+    "#e8c7a1", // soft gold
+    "#d9b8ff", // lilac
+    "#b8d4ff", // powder blue
+    "#ffd3e0", // blush
+    "#c7e8c2", // sage
+    "#ffe6a7", // pale yellow
+    "#f3c1c6"  // dusty rose
+  ];
+
+  class Particle {
+    constructor(x, y, color, angle, speed) {
+      this.x = x;
+      this.y = y;
+      this.color = color;
+      this.angle = angle;
+      this.speed = speed;
+      this.alpha = 1;
+      this.radius = Math.random() * 2 + 1.2;
+      this.gravity = 0.035;
+    }
+
+    update() {
+      this.x += Math.cos(this.angle) * this.speed;
+      this.y += Math.sin(this.angle) * this.speed;
+      this.speed *= 0.985;
+      this.y += this.gravity * 8;
+      this.alpha -= 0.014;
+    }
+
+    draw() {
+      ctx.save();
+      ctx.globalAlpha = Math.max(this.alpha, 0);
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = this.color;
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = this.color;
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  function createFirework() {
+    const x = Math.random() * canvas.width * 0.8 + canvas.width * 0.1;
+    const y = Math.random() * canvas.height * 0.45 + canvas.height * 0.08;
+    const count = 55 + Math.floor(Math.random() * 18);
+
+    for (let i = 0; i < count; i++) {
+      const angle = (Math.PI * 2 * i) / count;
+      const speed = Math.random() * 3 + 1.8;
+      const color = fireworkColors[Math.floor(Math.random() * fireworkColors.length)];
+      particles.push(new Particle(x, y, color, angle, speed));
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+      particles[i].update();
+      particles[i].draw();
+
+      if (particles[i].alpha <= 0) {
+        particles.splice(i, 1);
+      }
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  createFirework();
+  setInterval(createFirework, 950);
+  animate();
+</script>
+</body>
+</html>
