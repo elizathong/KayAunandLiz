@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Our Little World</title>
+
+<style>
+@font-face { font-family: 'MoreSugarRegular'; src: url('fonts/more-sugar-regular.ttf'); }
+@font-face { font-family: 'MoreSugarThin'; src: url('fonts/more-sugar-thin.ttf'); }
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'MoreSugarThin';
+  background:
+    linear-gradient(rgba(18,15,13,0.4), rgba(18,15,13,0.6)),
+    url("background-cover-page.jpg");
+  background-size: cover;
+  background-position: center;
+  color: #f0d9b5;
+  display: flex;
+  justify-content: center;
+  padding: 120px 20px 40px;
+}
+
+.navbar {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  width: calc(100% - 40px);
+  max-width: 500px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+
+.navbar a {
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
+  font-family: 'MoreSugarRegular';
+  font-size: 0.75rem;
+  color: #f0d9b5;
+  padding: 6px 4px;
+  border-radius: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.navbar a:hover { background: rgba(240,217,181,0.2); }
+.navbar a.active { background: #f0d9b5; color: #4a2e1b; }
+
+.container { max-width: 1100px; width: 100%; text-align: center; }
+
+.month-dropdown {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto 20px;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  font-family: 'MoreSugarRegular';
+  background: rgba(0,0,0,0.5);
+  color: #f0d9b5;
+  text-align: center;
+}
+
+.slideshow {
+  max-width: 800px;
+  margin: 0 auto 10px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+
+.slide { display: none; width: 100%; height: 450px; object-fit: cover; }
+.active { display: block; animation: fade 1s; }
+
+@keyframes fade { from {opacity:0;} to {opacity:1;} }
+
+video { width:100%; height:450px; object-fit:cover; }
+
+.button-container { margin: 15px 0 30px; }
+.nav-btn {
+  font-family: 'MoreSugarRegular';
+  padding: 8px 16px;
+  margin: 0 10px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(0,0,0,0.5);
+  color: #f0d9b5;
+  cursor: pointer;
+}
+.nav-btn:hover { background: rgba(0,0,0,0.8); }
+
+@media (max-width:768px){
+  body { padding-top: 120px; }
+  .slide, video { height: 260px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+  <a href="index.html">home</a>
+  <a href="home.html" class="active">moments</a>
+  <a href="https://elizathong.github.io/valentine/" target="_blank">game</a>
+  <a href="https://elizathong.github.io/two-weeks-still-us/" target="_blank">letters</a>
+  <a href="https://www.notion.so/kayaun-and-liz/Kay-Aun-and-Liz-1fb0c8d5e13f80e29a2ef84b9a2ec36a?source=copy_link" target="_blank">❤️</a>
+</div>
+
+<div class="container">
+  <select id="monthDropdown" class="month-dropdown"></select>
+  <div class="slideshow" id="slideshow"></div>
+  <div class="button-container">
+    <button class="nav-btn" onclick="prevSlide()">⬅ Back</button>
+    <button class="nav-btn" onclick="nextSlide()">Next ➡</button>
+  </div>
+</div>
+
+<script>
+// Each dropdown item is one folder
+const folders = [
+  { name: "April 2025 Part 1", folder: "apr-2025-part-1" },
+  { name: "April 2025 Part 2", folder: "apr-2025-part-2" },
+  { name: "May 2025", folder: "may-2025" },
+  { name: "June 2025", folder: "jun-2025" },
+  { name: "July 2025", folder: "jul-2025" },
+  { name: "August 2025", folder: "aug-2025" },
+  { name: "September 2025", folder: "sep-2025" },
+  { name: "October 2025", folder: "oct-2025" },
+  { name: "November 2025", folder: "nov-2025" },
+  { name: "December 2025", folder: "dec-2025" },
+  { name: "January 2026", folder: "jan-2026" },
+  { name: "February 2026", folder: "feb-2026" },
+  { name: "March 2026", folder: "mar-2026" }
+];
+
+const dropdown = document.getElementById("monthDropdown");
+folders.forEach((f,i)=>{
+  const option = document.createElement("option");
+  option.value = i; // store index
+  option.textContent = f.name;
+  dropdown.appendChild(option);
+});
+
+dropdown.addEventListener("change", ()=>loadAlbum(dropdown.value));
+
+let slides = [], current=0, autoTimeout;
+
+function loadAlbum(index){
+  const slideshow = document.getElementById("slideshow");
+  slideshow.innerHTML = '';
+  slides=[];
+  current=0;
+  let loadedCount=0;
+
+  const folderName = folders[index].folder;
+
+  // load images
+  for(let i=1;i<=60;i++){
+    const img = new Image();
+    img.src = `media/${folderName}/pic (${i}).jpg`;
+    img.className="slide";
+    img.onerror = ()=>{};
+    img.onload = ()=>{
+      slides.push(img);
+      slideshow.appendChild(img);
+      if(loadedCount++===0) showSlide(0);
+    };
+  }
+
+  // load videos
+  for(let i=1;i<=50;i++){
+    const vid = document.createElement("video");
+    vid.src = `media/${folderName}/video (${i}).mp4`;
+    vid.muted=true;
+    vid.playsInline=true;
+    vid.className="slide";
+    vid.onerror = ()=>{};
+    vid.onloadeddata = ()=>{
+      slides.push(vid);
+      slideshow.appendChild(vid);
+      if(loadedCount++===0) showSlide(0);
+    };
+  }
+}
+
+function showSlide(index){
+  clearTimeout(autoTimeout);
+  if(slides.length===0) return;
+
+  const currentSlide = slides[current];
+  if(currentSlide && currentSlide.tagName==="VIDEO"){
+    currentSlide.pause();
+    currentSlide.currentTime=0;
+  }
+  if(currentSlide) currentSlide.classList.remove("active");
+
+  current=(index+slides.length)%slides.length;
+  const next = slides[current];
+  next.classList.add("active");
+
+  if(next.tagName==="VIDEO"){
+    next.play();
+    next.onended=nextSlide;
+  } else {
+    autoTimeout=setTimeout(nextSlide,5000);
+  }
+}
+
+function nextSlide(){ showSlide(current+1); }
+function prevSlide(){ showSlide(current-1); }
+
+// load default
+setTimeout(()=>{
+  dropdown.value = 0;
+  loadAlbum(0);
+},100);
+</script>
+
+</body>
+</html>
