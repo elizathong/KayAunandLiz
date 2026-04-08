@@ -23,15 +23,17 @@
 
     body {
       font-family: 'Nunito', sans-serif;
-      overflow: hidden;
+      overflow-y: auto; 
       position: relative;
+      min-height: 100vh;
       background-color: #120f0d;
       background-image:
         linear-gradient(rgba(18, 15, 13, 0.38), rgba(18, 15, 13, 0.58)),
         url("background-cover-page.jpg");
-      background-position: center;
+      background-position: center top;
       background-size: cover;
       background-repeat: no-repeat;
+      background-attachment: fixed;
     }
 
     canvas {
@@ -46,12 +48,11 @@
     .overlay {
       position: relative;
       z-index: 2;
-      min-height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
       text-align: center;
-      padding: 24px;
+      padding: 60px 24px;
     }
 
     .content {
@@ -76,7 +77,7 @@
       line-height: 1.8;
       font-weight: 500;
       color: #f3e7d7;
-      max-width: 620px;
+      max-width: 760px; /* ✅ widened paragraph */
       margin: 0 auto 30px;
       text-shadow: 0 1px 8px rgba(0, 0, 0, 0.22);
     }
@@ -131,108 +132,113 @@
     }
   </style>
 </head>
+
 <body>
   <canvas id="fireworks"></canvas>
 
   <div class="overlay">
     <div class="content">
       <h1>happy 1 year, my love.</h1>
+
       <p>
-        365 days of loving you, laughing with you, add on with some fights 😜 and making memories with you.
+        happy one year, bb 🤍<br><br>
+
+        it’s kinda crazy how all these little moments with you turned into something so important to me. like the random hangouts, the laughs, the quiet times… somehow they all became the parts of my life i look forward to the most.<br><br>
+
+        i know i’m not always the easiest to love. i overthink, i get in my head, sometimes i shut down or don’t say things properly. but thank you for staying, for trying to understand me, and for choosing me even on days where i’m a bit harder to handle.<br><br>
+
+        i think what i appreciate most is that you don’t just show love in big ways, but in the small, consistent ones too. and even though we’re quite different sometimes, i really do wish for us to keep finding more things that feel like “ours”, not just things we do, but things we genuinely enjoy together.<br><br>
+
+        thank you for a year of being my safe place, my comfort, and also someone who challenges me to grow. i’m still learning, still trying, but i hope you know i’m choosing you too.<br><br>
+
+        here’s to us — to more memories, more laughter, and figuring things out together, one step at a time 🤍<br><br>
+
+        365 days of loving you, laughing with you, add on with some fights 😜 and making memories with you.<br>
         a little corner of the internet made just for us.
       </p>
+
       <a href="home.html" class="enter-btn">enter our world</a>
     </div>
   </div>
 
   <script>
-  const canvas = document.getElementById("fireworks");
-  const ctx = canvas.getContext("2d");
+    const canvas = document.getElementById("fireworks");
+    const ctx = canvas.getContext("2d");
 
-  function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-
-  resizeCanvas();
-  window.addEventListener("resize", resizeCanvas);
-
-  const particles = [];
-  const fireworkColors = [
-    "#f7d6bf", // warm peach
-    "#e8c7a1", // soft gold
-    "#d9b8ff", // lilac
-    "#b8d4ff", // powder blue
-    "#ffd3e0", // blush
-    "#c7e8c2", // sage
-    "#ffe6a7", // pale yellow
-    "#f3c1c6"  // dusty rose
-  ];
-
-  class Particle {
-    constructor(x, y, color, angle, speed) {
-      this.x = x;
-      this.y = y;
-      this.color = color;
-      this.angle = angle;
-      this.speed = speed;
-      this.alpha = 1;
-      this.radius = Math.random() * 2 + 1.2;
-      this.gravity = 0.035;
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     }
 
-    update() {
-      this.x += Math.cos(this.angle) * this.speed;
-      this.y += Math.sin(this.angle) * this.speed;
-      this.speed *= 0.985;
-      this.y += this.gravity * 8;
-      this.alpha -= 0.014;
-    }
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
 
-    draw() {
-      ctx.save();
-      ctx.globalAlpha = Math.max(this.alpha, 0);
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      ctx.fillStyle = this.color;
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = this.color;
-      ctx.fill();
-      ctx.restore();
-    }
-  }
+    const particles = [];
+    const fireworkColors = [
+      "#f7d6bf","#e8c7a1","#d9b8ff","#b8d4ff","#ffd3e0","#c7e8c2","#ffe6a7","#f3c1c6"
+    ];
 
-  function createFirework() {
-    const x = Math.random() * canvas.width * 0.8 + canvas.width * 0.1;
-    const y = Math.random() * canvas.height * 0.45 + canvas.height * 0.08;
-    const count = 55 + Math.floor(Math.random() * 18);
+    class Particle {
+      constructor(x, y, color, angle, speed) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.angle = angle;
+        this.speed = speed;
+        this.alpha = 1;
+        this.radius = Math.random() * 2 + 1.2;
+        this.gravity = 0.035;
+      }
 
-    for (let i = 0; i < count; i++) {
-      const angle = (Math.PI * 2 * i) / count;
-      const speed = Math.random() * 3 + 1.8;
-      const color = fireworkColors[Math.floor(Math.random() * fireworkColors.length)];
-      particles.push(new Particle(x, y, color, angle, speed));
-    }
-  }
+      update() {
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed;
+        this.speed *= 0.985;
+        this.y += this.gravity * 8;
+        this.alpha -= 0.014;
+      }
 
-  function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    for (let i = particles.length - 1; i >= 0; i--) {
-      particles[i].update();
-      particles[i].draw();
-
-      if (particles[i].alpha <= 0) {
-        particles.splice(i, 1);
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = Math.max(this.alpha, 0);
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = this.color;
+        ctx.fill();
+        ctx.restore();
       }
     }
 
-    requestAnimationFrame(animate);
-  }
+    function createFirework() {
+      const x = Math.random() * canvas.width * 0.8 + canvas.width * 0.1;
+      const y = Math.random() * canvas.height * 0.45 + canvas.height * 0.08;
+      const count = 55 + Math.floor(Math.random() * 18);
 
-  createFirework();
-  setInterval(createFirework, 950);
-  animate();
-</script>
+      for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 * i) / count;
+        const speed = Math.random() * 3 + 1.8;
+        const color = fireworkColors[Math.floor(Math.random() * fireworkColors.length)];
+        particles.push(new Particle(x, y, color, angle, speed));
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        particles[i].update();
+        particles[i].draw();
+        if (particles[i].alpha <= 0) particles.splice(i, 1);
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    createFirework();
+    setInterval(createFirework, 950);
+    animate();
+  </script>
 </body>
 </html>
